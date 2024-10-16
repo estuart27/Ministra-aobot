@@ -1,0 +1,231 @@
+import telebot
+import schedule
+import time
+from datetime import datetime
+import threading
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
+import random
+
+
+
+# Substitua pelo token do seu bot
+API_TOKEN = '7363677491:AAG5PYMSToyDvmiyDGJH1PCBNEefvAwNyoM'
+
+chat_id = '6662355881'  # Substitua pelo ID do chat ou do usuário
+
+bot = telebot.TeleBot(API_TOKEN)
+
+ministracoes = []
+
+versiculos = [] 
+
+oracao = [] 
+
+mudar = []
+
+frases = []
+
+sentimento = []
+
+
+def criar_menu_opcoes():
+    # Cria o menu com botões
+    markup = InlineKeyboardMarkup()
+    
+    # Adicionar botões com as opções desejadas
+    markup.row_width = 2  # Define quantos botões por linha
+    markup.add(InlineKeyboardButton("Adicionar Ministração", callback_data="ministracao"),
+               InlineKeyboardButton("Adicionar Versículo Bíblico", callback_data="versiculo"),
+               InlineKeyboardButton("Adicionar Necessidade de Mudar", callback_data="necessidade"),
+               InlineKeyboardButton("Pedido de Oração", callback_data="pedido_oracao"),
+               InlineKeyboardButton("Frases de Pastores e Teólogos", callback_data="frases"),
+               InlineKeyboardButton("Sentimento do Dia", callback_data="sentimento"),
+               InlineKeyboardButton("Escrever o que está sentindo", callback_data="escrever_sentimento"))
+    
+    return markup
+
+# Comando /start que envia o menu com as opções
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
+    bot.reply_to(message, "Bem-vindo ao meu bot! Escolha uma das opções abaixo:", reply_markup=criar_menu_opcoes())
+
+
+# Função para lidar com as respostas dos botões
+@bot.callback_query_handler(func=lambda call: True)
+def callback_query(call):
+    if call.data == "ministracao":
+        bot.send_message(call.message.chat.id, "Escreva sua ministração:")
+        bot.register_next_step_handler(call.message, salvar_ministracao)
+    elif call.data == "versiculo":
+        bot.send_message(call.message.chat.id, "Escreva o versículo:")
+        bot.register_next_step_handler(call.message, salvar_versiculo)
+
+    elif call.data == "necessidade":
+        bot.send_message(call.message.chat.id, "Escreva sua Necessidade de Mudar?")
+        bot.register_next_step_handler(call.message, salvar_mudar)
+
+    elif call.data == "pedido_oracao":
+        bot.send_message(call.message.chat.id, "Escreva seu pedido de oração:")
+        bot.register_next_step_handler(call.message, salvar_oracao)
+
+    elif call.data == "frases":
+        bot.send_message(call.message.chat.id, "Adicione uma frase:")
+        bot.register_next_step_handler(call.message, salvar_frases)
+
+    elif call.data == "sentimento":
+        bot.send_message(call.message.chat.id, "Qual seu sentimento de hoje?")
+        bot.register_next_step_handler(call.message, salvar_sentimento)
+
+    elif call.data == "escrever_sentimento":
+        bot.send_message(call.message.chat.id, "Você escolheu 'Escrever o que está sentindo'. Escreva seus sentimentos:")
+        print(ministracoes)
+        print(mudar)
+        print(oracao)
+        print(frases)
+        print(sentimento)
+        print(versiculos)
+
+
+#============================== FINALIZADO =================================================================
+
+
+def salvar_ministracao(message):
+    user_id = message.from_user.id
+    ministracao = message.text  # Captura o texto da ministração
+    
+    # Salva a ministração na variável (ou banco de dados)
+    ministracoes.append(ministracao)
+    
+    # Confirmação ao usuário
+    bot.send_message(message.chat.id, "Sua ministração foi salva com sucesso!")
+
+
+
+def salvar_versiculo(message):
+    user_id = message.from_user.id
+    ministracao = message.text  # Captura o texto da ministração
+    
+    # Salva a ministração na variável (ou banco de dados)
+    versiculos.append(ministracao)
+    
+    # Confirmação ao usuário
+    bot.send_message(message.chat.id, "Seu versiculo foi salva com sucesso!")
+
+
+
+def salvar_oracao(message):
+    user_id = message.from_user.id
+    ministracao = message.text  # Captura o texto da ministração
+    
+    # Salva a ministração na variável (ou banco de dados)
+    oracao.append(ministracao)
+
+    # Confirmação ao usuário
+    bot.send_message(message.chat.id, "Sua oração foi salva com sucesso!")
+
+
+
+def salvar_mudar(message):
+    user_id = message.from_user.id
+    ministracao = message.text  # Captura o texto da ministração
+    
+    # Salva a ministração na variável (ou banco de dados)
+    mudar.append(ministracao)
+    
+    # Confirmação ao usuário
+    bot.send_message(message.chat.id, "o que você precisa mudar foi salva com sucesso!")
+
+
+
+def salvar_frases(message):
+    user_id = message.from_user.id
+    ministracao = message.text  # Captura o texto da ministração
+    
+    # Salva a ministração na variável (ou banco de dados)
+    frases.append(ministracao)
+    
+    # Confirmação ao usuário
+    bot.send_message(message.chat.id, "Frase do dia foi salva com sucesso!")
+
+
+def salvar_sentimento(message):
+    user_id = message.from_user.id
+    ministracao = message.text  # Captura o texto da ministração
+    
+    # Salva a ministração na variável (ou banco de dados)
+    sentimento.append(ministracao)
+    
+    # Confirmação ao usuário
+    bot.send_message(message.chat.id, "Seu sentimento do dia foi salva com sucesso!")
+
+#===============================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Resposta a mensagens comuns
+@bot.message_handler(func=lambda message: True)
+def echo_all(message):
+    bot.reply_to(message, "Você disse: " + message.text)
+
+
+# Comando /help
+@bot.message_handler(commands=['help'])
+def send_help(message):
+    bot.reply_to(message, "Aqui estão os comandos disponíveis:\n/start - Iniciar\n/help - Ajuda")
+
+
+# Função para enviar mensagem agendada
+def enviar_mensagem():
+    listas = [ministracoes, versiculos, oracao]
+    
+    lista_selecionada = random.choice(listas)
+    
+    if lista_selecionada:
+        mensagem = random.choice(lista_selecionada)
+    else:
+        mensagem = "Lista está vazia."
+
+    bot.send_message(chat_id, mensagem)
+    print(f"Mensagem enviada às {datetime.now().strftime('%H:%M:%S')}")
+
+
+def agendar_mensagens():
+    schedule.every().day.at("08:40").do(enviar_mensagem)
+    schedule.every().day.at("12:40").do(enviar_mensagem)
+    schedule.every().day.at("21:35").do(enviar_mensagem)
+    schedule.every().day.at("21:32").do(enviar_mensagem)
+    schedule.every().day.at("21:30").do(enviar_mensagem)
+
+
+    while True:
+        schedule.run_pending()  # Verifica se há tarefas agendadas para executar
+        time.sleep(1)  # Aguardar 1 segundo antes de verificar novamente
+
+
+def iniciar_bot_e_agendamento():
+    # Cria uma nova thread para o agendamento
+    agendamento_thread = threading.Thread(target=agendar_mensagens)
+    agendamento_thread.start()
+
+    # Inicia o bot para receber mensagens
+    bot.infinity_polling()
+
+# Iniciar o bot e o agendamento juntos
+if __name__ == '__main__':
+    iniciar_bot_e_agendamento()
